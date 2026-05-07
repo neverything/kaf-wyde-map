@@ -21,7 +21,7 @@
 
   /* Typography — display work on top of avenir-lt-pro by leaning on
      weight, tracking, and case rather than introducing a second face. */
-  --font-body: "avenir-lt-pro", "Avenir Next", Avenir, "Helvetica Neue", Arial, sans-serif;
+  --font-body: "avenir-lt-pro", sans-serif;
 
   /* Type scale */
   --t-eyebrow:    11px;

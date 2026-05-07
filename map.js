@@ -20,8 +20,26 @@ const CONFIG = {
   perPage: 100,
 
   labels: {
-    en: { countries: 'countries', stories: 'stories', hint: 'Hover or tap a marker', readMore: 'Read story →', stories_from: (n, c) => `${n} stories from ${c}:`, loading: 'Loading stories…', error: 'Could not load stories. Please try again.' },
-    fr: { countries: 'pays', stories: 'récits', hint: 'Survolez ou touchez un marqueur', readMore: 'Lire l’article →', stories_from: (n, c) => `${n} récits depuis ${c} :`, loading: 'Chargement des récits…', error: 'Impossible de charger les récits. Veuillez réessayer.' }
+    en: {
+      countries: 'countries', stories: 'stories',
+      hint: 'Hover or tap a marker',
+      indexTitle: 'Index by country', indexHint: 'Click to view stories',
+      readMore: 'Read story',
+      stories_from: (n) => `${n} stories`,
+      loading: 'Loading stories…',
+      error: 'Could not load stories. Please try again.',
+      story_count: (n) => `${n} ${n === 1 ? 'story' : 'stories'}`
+    },
+    fr: {
+      countries: 'pays', stories: 'récits',
+      hint: 'Survolez ou touchez un marqueur',
+      indexTitle: 'Index par pays', indexHint: 'Cliquez pour voir les récits',
+      readMore: 'Lire l’article',
+      stories_from: (n) => `${n} récits`,
+      loading: 'Chargement des récits…',
+      error: 'Impossible de charger les récits. Veuillez réessayer.',
+      story_count: (n) => `${n} ${n === 1 ? 'récit' : 'récits'}`
+    }
   }
 };
 
@@ -75,10 +93,16 @@ const TEMPLATE = (LANG === 'fr')
 document.documentElement.lang = LANG;
 const T = CONFIG.labels[LANG];
 
-document.getElementById('label-countries').textContent = T.countries;
-document.getElementById('label-stories').textContent = T.stories;
-document.getElementById('label-hint').textContent = T.hint;
-document.getElementById('status').textContent = T.loading;
+function setText(id, value) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = value;
+}
+setText('label-countries', T.countries);
+setText('label-stories', T.stories);
+setText('label-hint', T.hint);
+setText('label-index', T.indexTitle);
+setText('label-index-hint', T.indexHint);
+setText('status', T.loading);
 
 // ============================================================
 // FETCH STORIES FROM WORDPRESS
@@ -274,10 +298,17 @@ const chips = document.getElementById('chips');
 
 function renderChips(data) {
   chips.innerHTML = '';
-  data.forEach(d => {
+  data.forEach((d, i) => {
+    const li = document.createElement('li');
     const b = document.createElement('button');
-    b.className = 'country-chip';
-    b.innerHTML = `<span>${d.displayName}</span><span class="n">${d.articles.length}</span>`;
+    b.className = 'country-row';
+    b.setAttribute('data-iso', d.iso);
+    b.setAttribute('aria-label', `${d.displayName}, ${T.story_count(d.articles.length)}`);
+    b.innerHTML = `
+      <span class="num">${String(i + 1).padStart(2, '0')}</span>
+      <span class="name">${escapeHtml(d.displayName)}</span>
+      <span class="count">${T.story_count(d.articles.length)}</span>
+    `;
     b.addEventListener('click', (ev) => {
       ev.stopPropagation();
       const m = document.querySelector(`circle.marker[data-iso="${d.iso}"]`);
@@ -289,7 +320,8 @@ function renderChips(data) {
     });
     b.addEventListener('mouseenter', () => highlight(d.iso, true));
     b.addEventListener('mouseleave', () => highlight(d.iso, false));
-    chips.appendChild(b);
+    li.appendChild(b);
+    chips.appendChild(li);
   });
 }
 
@@ -348,9 +380,9 @@ function renderMap(data, world) {
       .attr('transform', d => `translate(${projection([d.lon, d.lat]).join(',')})`);
 
   markers.append('circle')
-    .attr('class', 'marker')
+    .attr('class', d => 'marker ' + (d.articles.length > 1 ? 'multi' : 'single'))
     .attr('data-iso', d => d.iso)
-    .attr('r', d => d.articles.length > 1 ? 9 : 5)
+    .attr('r', d => d.articles.length > 1 ? 11 : 5.5)
     .on('mouseenter', function(e, d) { if (!pinned) showCard(d.iso, e); })
     .on('mousemove', function(e, d) { if (!pinned) positionCard(e); })
     .on('mouseleave', function() { if (!pinned) scheduleHide(); })
@@ -359,7 +391,7 @@ function renderMap(data, world) {
   markers.filter(d => d.articles.length > 1)
     .append('text')
     .attr('class', 'marker-label')
-    .attr('y', 3)
+    .attr('y', 3.5)
     .text(d => d.articles.length);
 
   // Click anywhere outside the card (and outside an active country)
@@ -397,25 +429,34 @@ function renderMap(data, world) {
     highlight(iso, true);
     const a = item.articles[0];
     const multi = item.articles.length > 1;
-    let multiHtml = '';
+    let bodyHtml;
     if (multi) {
-      multiHtml = `<div class="card-multi"><div class="card-multi-label">${T.stories_from(item.articles.length, item.displayName)}</div>` +
-        item.articles.map(x => `<a href="${escapeAttr(x.url)}" target="_top">${escapeHtml(truncate(x.title, 70))}</a>`).join('') +
-        `</div>`;
+      const items = item.articles.map(x =>
+        `<li><a href="${escapeAttr(x.url)}" target="_top">${escapeHtml(truncate(x.title, 80))}</a></li>`
+      ).join('');
+      bodyHtml = `
+        <div class="card-eyebrow">${escapeHtml(item.displayName)}</div>
+        <div class="card-multi">
+          <div class="card-multi-label">${T.stories_from(item.articles.length)}</div>
+          <ol>${items}</ol>
+        </div>
+      `;
     } else {
-      multiHtml = `<a class="card-link" href="${escapeAttr(a.url)}" target="_top">${T.readMore}</a>`;
+      bodyHtml = `
+        <div class="card-eyebrow">${escapeHtml(item.displayName)}</div>
+        <h3 class="card-title">${escapeHtml(a.title)}</h3>
+        <p class="card-excerpt">${escapeHtml(a.excerpt || '')}</p>
+        <a class="card-link" href="${escapeAttr(a.url)}" target="_top">
+          ${T.readMore} <span class="arrow" aria-hidden="true">→</span>
+        </a>
+      `;
     }
-    const imgHtml = a.image
-      ? `<img src="${escapeAttr(a.image)}" alt="" loading="lazy" onerror="this.style.display='none'"/>`
+    const imageHtml = (!multi && a.image)
+      ? `<div class="card-image" style="background-image:url('${escapeAttr(a.image)}')"></div>`
       : '';
     card.html(`
-      ${imgHtml}
-      <div class="card-body">
-        <div class="card-country">${escapeHtml(item.displayName)}</div>
-        <div class="card-title">${escapeHtml(a.title)}</div>
-        <div class="card-excerpt">${escapeHtml(a.excerpt || '')}</div>
-        ${multiHtml}
-      </div>
+      ${imageHtml}
+      <div class="card-body">${bodyHtml}</div>
     `);
     card.classed('show', true);
     card.on('mouseenter', () => clearTimeout(hideTimer));

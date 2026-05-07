@@ -12,14 +12,33 @@
 <body>
 
 <div class="wrap">
-  <div class="legend">
-    <span><strong id="stat-countries">…</strong> <span id="label-countries">countries</span> · <strong id="stat-stories">…</strong> <span id="label-stories">stories</span></span>
-    <span id="label-hint">Hover or tap a marker</span>
-  </div>
+
+  <header class="intro">
+    <div>
+      <span class="eyebrow">WYDE Accountability Hubs</span>
+      <h1 class="headline">Stories from across <em>Sub-Saharan Africa</em></h1>
+    </div>
+    <div class="meta-line">
+      <span class="stat"><strong id="stat-stories">…</strong><span id="label-stories">stories</span></span>
+      <span class="sep" aria-hidden="true"></span>
+      <span class="stat"><strong id="stat-countries">…</strong><span id="label-countries">countries</span></span>
+      <span class="sep" aria-hidden="true"></span>
+      <span class="hint" id="label-hint">Hover or tap a marker</span>
+    </div>
+  </header>
+
   <div class="svg-host" id="host">
     <div class="status" id="status">Loading…</div>
   </div>
-  <div class="country-list" id="chips"></div>
+
+  <section class="index">
+    <div class="index-head">
+      <span class="eyebrow" id="label-index">Index by country</span>
+      <span class="index-hint" id="label-index-hint">Click to view stories</span>
+    </div>
+    <ol class="country-list" id="chips"></ol>
+  </section>
+
 </div>
 
 <script>

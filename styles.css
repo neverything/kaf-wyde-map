@@ -242,9 +242,9 @@ a { color: inherit; }
 .card-multi a:hover::before { color: var(--brand-strong); }
 
 /* ============================================================
-   COUNTRY INDEX — wyde-style pill buttons
-   Mirrors `is-style-wyde-button` on /wyde/about-the-partners/:
-   pill shape, leading → glyph, fills brand-blue on hover.
+   COUNTRY INDEX — mirrors `is-style-wyde-button` on
+   /wyde/about-the-partners/: square corners, leading → glyph,
+   solid wyde-blue default, inverts to white on hover.
    ============================================================ */
 .index {
   margin-top: clamp(20px, 3vw, 32px);
@@ -255,33 +255,33 @@ a { color: inherit; }
   padding: 0;
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 8px;
 }
 
 .country-pill {
-  --pill-pad-y: 10px;
-  --pill-pad-x: 18px;
+  --pad-y: calc(.667em + 2px);
+  --pad-x: calc(1.333em + 2px);
   all: unset;
+  box-sizing: border-box;
   cursor: pointer;
   font-family: inherit;
-  font-size: 13px;
-  font-weight: 600;
+  font-size: 14px;
+  font-weight: 500;
   line-height: 1.2;
-  color: var(--brand);
-  background: transparent;
-  border: 1.5px solid var(--brand);
-  border-radius: 9999px;
-  padding: var(--pill-pad-y) var(--pill-pad-x) var(--pill-pad-y) calc(var(--pill-pad-x) + 16px);
+  color: #fff;
+  background: var(--brand);
+  border: 1px solid var(--brand);
+  padding: var(--pad-y) var(--pad-x) var(--pad-y) 2em;
   position: relative;
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  transition: background-color .18s ease, color .18s ease, border-color .18s ease;
+  gap: 10px;
+  transition: background-color .18s ease, color .18s ease;
 }
 .country-pill::before {
   content: "→";
   position: absolute;
-  left: calc(var(--pill-pad-x) - 4px);
+  left: .6em;
   top: 50%;
   transform: translateY(-50%);
   font-weight: 700;
@@ -290,9 +290,8 @@ a { color: inherit; }
 .country-pill:hover,
 .country-pill:focus-visible,
 .country-pill.hl {
-  background: var(--brand);
-  color: #fff;
-  border-color: var(--brand);
+  background: #fff;
+  color: var(--brand);
 }
 .country-pill:focus-visible {
   outline: 2px solid var(--brand-mid);
@@ -304,17 +303,16 @@ a { color: inherit; }
   font-weight: 700;
   font-feature-settings: "tnum" 1;
   padding: 2px 7px;
-  border-radius: 9999px;
-  background: var(--brand-soft);
-  color: var(--brand);
+  background: rgba(255, 255, 255, 0.18);
+  color: #fff;
   line-height: 1;
   transition: background-color .18s ease, color .18s ease;
 }
 .country-pill:hover .count,
 .country-pill:focus-visible .count,
 .country-pill.hl .count {
-  background: rgba(255, 255, 255, 0.18);
-  color: #fff;
+  background: var(--brand-soft);
+  color: var(--brand);
 }
 
 /* ============================================================

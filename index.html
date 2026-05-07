@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WYDE Accountability Hubs — Map</title>
+<link rel="preconnect" href="https://use.typekit.net" crossorigin>
+<!-- Replace with your Adobe Fonts kit URL to load avenir-lt-pro:
+     <link rel="stylesheet" href="https://use.typekit.net/XXXXXXX.css"> -->
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="wrap">
+  <div class="legend">
+    <span><strong id="stat-countries">…</strong> <span id="label-countries">countries</span> · <strong id="stat-stories">…</strong> <span id="label-stories">stories</span></span>
+    <span id="label-hint">Hover or tap a marker</span>
+  </div>
+  <div class="svg-host" id="host">
+    <div class="status" id="status">Loading…</div>
+  </div>
+  <div class="country-list" id="chips"></div>
+</div>
+
+<script>
+  window.PAGE_DEFAULTS = { lang: 'en', template: 'single-microsite-wyde' };
+</script>
+<script src="map.js"></script>
+</body>
+</html>

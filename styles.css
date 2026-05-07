@@ -1,0 +1,182 @@
+:root {
+  --bg: #ffffff;
+  --bg-soft: #F7F2ED;
+  --border: rgba(0,71,108,0.15);
+  --border-strong: rgba(0,71,108,0.35);
+  --text: #1a1a1a;
+  --text-muted: #5a5a5a;
+  --text-faint: #8a8a8a;
+  --brand: #00476c;
+  --brand-accent: #245e7e;
+  --brand-soft: #E8F1F5;
+  --brand-mid: #78D8CF;
+  --brand-strong: #003047;
+  --sand: #ECDCC8;
+}
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; background: transparent; }
+body {
+  font-family: "avenir-lt-pro", "Avenir Next", Avenir, -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  color: var(--text);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+.wrap {
+  position: relative;
+  width: 100%;
+  max-width: 1140px;
+  margin: 0 auto;
+  padding: 8px;
+}
+.legend {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  font-size: 13px;
+  color: var(--text-muted);
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.legend strong { color: var(--text); font-weight: 500; }
+.svg-host {
+  position: relative;
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+}
+.svg-host svg { display: block; width: 100%; height: auto; }
+.country-base {
+  fill: #ffffff;
+  stroke: var(--border-strong);
+  stroke-width: 0.5;
+}
+.country-active {
+  fill: var(--brand-mid);
+  stroke: var(--brand);
+  stroke-width: 0.7;
+  cursor: pointer;
+  transition: fill .15s;
+}
+.country-active:hover, .country-active.hl { fill: var(--brand-accent); }
+.marker {
+  fill: var(--brand);
+  stroke: #fff;
+  stroke-width: 1.5;
+  cursor: pointer;
+  transition: r .15s, fill .15s;
+}
+.marker:hover, .marker.hl { fill: var(--brand-strong); }
+.marker-label {
+  font-size: 10px;
+  font-weight: 600;
+  fill: #fff;
+  pointer-events: none;
+  text-anchor: middle;
+}
+.card {
+  position: absolute;
+  width: 280px;
+  background: #fff;
+  border: 1px solid var(--border-strong);
+  border-radius: 12px;
+  padding: 0;
+  overflow: hidden;
+  z-index: 10;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .12s;
+  box-shadow: 0 6px 20px rgba(0,0,0,.08);
+}
+.card.show { opacity: 1; pointer-events: auto; }
+.card img {
+  width: 100%; height: 140px; object-fit: cover;
+  display: block; background: #eee;
+}
+.card-body { padding: 12px 14px; }
+.card-country {
+  font-size: 11px; font-weight: 600;
+  color: var(--brand);
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  margin-bottom: 4px;
+}
+.card-title {
+  font-size: 14px; font-weight: 600;
+  line-height: 1.35; margin: 0 0 6px 0;
+  color: var(--text);
+}
+.card-excerpt {
+  font-size: 12px; color: var(--text-muted);
+  line-height: 1.5; margin-bottom: 10px;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.card-link {
+  font-size: 12px; color: var(--brand);
+  text-decoration: none;
+  font-weight: 600;
+}
+.card-link:hover { text-decoration: underline; }
+.card-multi {
+  margin-top: 6px;
+  border-top: 1px solid var(--border);
+  padding-top: 8px;
+}
+.card-multi-label {
+  font-size: 11px; color: var(--text-muted);
+  margin-bottom: 4px; font-weight: 500;
+}
+.card-multi a {
+  color: var(--brand);
+  text-decoration: none;
+  display: block;
+  padding: 4px 0;
+  font-size: 12px;
+  line-height: 1.35;
+}
+.card-multi a:hover { text-decoration: underline; }
+.country-list {
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 6px;
+}
+.country-chip {
+  font-size: 12px;
+  padding: 6px 10px;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+  color: var(--text);
+  text-align: left;
+  font-family: inherit;
+  transition: all .12s;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 6px;
+}
+.country-chip:hover { border-color: var(--brand); background: var(--brand-soft); color: var(--brand); }
+.country-chip .n {
+  font-size: 10px;
+  color: var(--text-faint);
+  background: var(--bg-soft);
+  padding: 1px 6px;
+  border-radius: 8px;
+  font-weight: 500;
+}
+.country-chip:hover .n { color: var(--brand); background: #fff; }
+.status {
+  padding: 60px 20px;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+.status.error { color: #b1331f; }
+@media (max-width: 480px) {
+  .card { width: 240px; }
+  .card img { height: 110px; }
+}

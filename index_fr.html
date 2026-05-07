@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WYDE — Carte des hubs de redevabilité</title>
+<link rel="preconnect" href="https://use.typekit.net" crossorigin>
+<!-- Replace with your Adobe Fonts kit URL to load avenir-lt-pro:
+     <link rel="stylesheet" href="https://use.typekit.net/XXXXXXX.css"> -->
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="wrap">
+  <div class="legend">
+    <span><strong id="stat-countries">…</strong> <span id="label-countries">pays</span> · <strong id="stat-stories">…</strong> <span id="label-stories">récits</span></span>
+    <span id="label-hint">Survolez ou touchez un marqueur</span>
+  </div>
+  <div class="svg-host" id="host">
+    <div class="status" id="status">Chargement…</div>
+  </div>
+  <div class="country-list" id="chips"></div>
+</div>
+
+<script>
+  window.PAGE_DEFAULTS = { lang: 'fr', template: 'single-microsite-wyde-fr' };
+</script>
+<script src="map.js"></script>
+</body>
+</html>

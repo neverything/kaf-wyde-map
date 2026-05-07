@@ -40,6 +40,7 @@
 html, body { margin: 0; padding: 0; background: transparent; }
 body {
   font-family: var(--font-body);
+  font-weight: 400;
   color: var(--ink);
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
@@ -185,7 +186,7 @@ a { color: inherit; }
   align-items: center;
   gap: 6px;
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--brand);
   text-decoration: none;
 }

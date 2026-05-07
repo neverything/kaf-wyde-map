@@ -60,80 +60,6 @@ a { color: inherit; }
 }
 
 /* ============================================================
-   EDITORIAL HEADER
-   ============================================================ */
-.intro {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 14px;
-  padding-bottom: clamp(20px, 3vw, 32px);
-  border-bottom: 1px solid var(--hair);
-  margin-bottom: clamp(20px, 3vw, 32px);
-}
-@media (min-width: 720px) {
-  .intro {
-    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
-    align-items: end;
-    gap: 28px;
-  }
-}
-
-.eyebrow {
-  font-size: var(--t-eyebrow);
-  font-weight: 700;
-  letter-spacing: var(--tracking-eyebrow);
-  text-transform: uppercase;
-  color: var(--brand);
-}
-
-.headline {
-  margin: 8px 0 0;
-  font-size: var(--t-display);
-  font-weight: 700;
-  line-height: 1.1;
-  letter-spacing: var(--tracking-headline);
-  color: var(--brand);
-  max-width: 22ch;
-}
-.headline em { font-style: normal; }
-
-.meta-line {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: 6px 18px;
-  font-size: var(--t-meta);
-  color: var(--ink-soft);
-  letter-spacing: 0.01em;
-}
-.meta-line .stat {
-  display: inline-flex;
-  align-items: baseline;
-  gap: 6px;
-}
-.meta-line .stat strong {
-  font-size: 22px;
-  font-weight: 700;
-  color: var(--ink);
-  font-feature-settings: "tnum" 1;
-  letter-spacing: -0.01em;
-}
-.meta-line .stat span { color: var(--ink-mid); text-transform: lowercase; }
-.meta-line .sep {
-  display: inline-block;
-  width: 4px; height: 4px;
-  border-radius: 50%;
-  background: var(--brand-mid);
-}
-.meta-line .hint {
-  color: var(--ink-faint);
-  text-transform: uppercase;
-  font-size: 10px;
-  letter-spacing: 0.16em;
-  font-weight: 600;
-}
-
-/* ============================================================
    MAP SURFACE
    ============================================================ */
 .svg-host {
@@ -316,91 +242,80 @@ a { color: inherit; }
 .card-multi a:hover::before { color: var(--brand-strong); }
 
 /* ============================================================
-   COUNTRY INDEX — atlas-style
+   COUNTRY INDEX — wyde-style pill buttons
+   Mirrors `is-style-wyde-button` on /wyde/about-the-partners/:
+   pill shape, leading → glyph, fills brand-blue on hover.
    ============================================================ */
 .index {
-  margin-top: clamp(28px, 4vw, 44px);
+  margin-top: clamp(20px, 3vw, 32px);
 }
-.index-head {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 18px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid var(--hair-strong);
-  margin-bottom: 8px;
-}
-.index-head .eyebrow { color: var(--brand); }
-.index-hint {
-  font-size: 10px;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--ink-faint);
-  font-weight: 600;
-}
-
 .country-list {
+  list-style: none;
   margin: 0;
   padding: 0;
-  list-style: none;
-  display: grid;
-  grid-template-columns: 1fr;
-  column-gap: 28px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
 }
-@media (min-width: 540px)  { .country-list { grid-template-columns: 1fr 1fr; } }
-@media (min-width: 880px)  { .country-list { grid-template-columns: 1fr 1fr 1fr; } }
-@media (min-width: 1080px) { .country-list { grid-template-columns: 1fr 1fr 1fr 1fr; } }
 
-.country-row {
+.country-pill {
+  --pill-pad-y: 10px;
+  --pill-pad-x: 18px;
   all: unset;
   cursor: pointer;
-  display: grid;
-  grid-template-columns: 28px 1fr auto;
-  align-items: baseline;
-  gap: 10px;
-  padding: 12px 2px;
-  border-bottom: 1px solid var(--hair);
   font-family: inherit;
-  color: var(--ink);
-  position: relative;
-  transition: color .15s ease;
-}
-.country-row:hover,
-.country-row:focus-visible { color: var(--brand); }
-.country-row:focus-visible { outline: 2px solid var(--brand-mid); outline-offset: 2px; }
-.country-row .num {
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  color: var(--ink-faint);
-  font-feature-settings: "tnum" 1;
-}
-.country-row:hover .num { color: var(--brand); }
-.country-row .name {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
-  letter-spacing: -0.005em;
+  line-height: 1.2;
+  color: var(--brand);
+  background: transparent;
+  border: 1.5px solid var(--brand);
+  border-radius: 9999px;
+  padding: var(--pill-pad-y) var(--pill-pad-x) var(--pill-pad-y) calc(var(--pill-pad-x) + 16px);
   position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: background-color .18s ease, color .18s ease, border-color .18s ease;
 }
-.country-row .name::after {
-  content: "";
+.country-pill::before {
+  content: "→";
   position: absolute;
-  left: 0; right: 100%;
-  bottom: -3px;
-  height: 1px;
-  background: var(--brand);
-  transition: right .25s ease;
-}
-.country-row:hover .name::after { right: 0; }
-.country-row .count {
-  font-size: 10px;
+  left: calc(var(--pill-pad-x) - 4px);
+  top: 50%;
+  transform: translateY(-50%);
   font-weight: 700;
-  letter-spacing: 0.06em;
-  color: var(--ink-soft);
-  font-feature-settings: "tnum" 1;
-  text-transform: uppercase;
+  line-height: 1;
 }
-.country-row:hover .count { color: var(--brand); }
+.country-pill:hover,
+.country-pill:focus-visible,
+.country-pill.hl {
+  background: var(--brand);
+  color: #fff;
+  border-color: var(--brand);
+}
+.country-pill:focus-visible {
+  outline: 2px solid var(--brand-mid);
+  outline-offset: 2px;
+}
+.country-pill .name { white-space: nowrap; }
+.country-pill .count {
+  font-size: 11px;
+  font-weight: 700;
+  font-feature-settings: "tnum" 1;
+  padding: 2px 7px;
+  border-radius: 9999px;
+  background: var(--brand-soft);
+  color: var(--brand);
+  line-height: 1;
+  transition: background-color .18s ease, color .18s ease;
+}
+.country-pill:hover .count,
+.country-pill:focus-visible .count,
+.country-pill.hl .count {
+  background: rgba(255, 255, 255, 0.18);
+  color: #fff;
+}
 
 /* ============================================================
    STATUS / LOADING

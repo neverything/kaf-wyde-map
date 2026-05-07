@@ -1,190 +1,158 @@
 # WYDE Accountability Hubs — Interactive Map
 
-Live map for the WYDE Stories of Impact, built to be embedded as an iframe
-into [kofiannanfoundation.org/wyde](https://www.kofiannanfoundation.org/wyde/)
-and [kofiannanfoundation.org/wyde-fr](https://www.kofiannanfoundation.org/wyde-fr/).
+Live map of the WYDE Stories of Impact, designed to be embedded as an
+iframe on [kofiannanfoundation.org/wyde](https://www.kofiannanfoundation.org/wyde/)
+(English) and the French equivalent.
 
-Stories are fetched live from the WordPress REST API — publish a new story,
-tag it with the WYDE microsite and a country, and it appears on the map within
-the next page load. No code changes needed.
+Stories are fetched live from the Kofi Annan Foundation WordPress REST API.
+Publish a story, assign it the `single-microsite-wyde` (or `-fr`) page
+template plus a country term, and it appears in the map on the next page
+load. No code changes required.
 
-## Quick start (host on GitHub Pages)
+## Live URLs
 
-1. Create a new public GitHub repo (e.g. `wyde-map`).
-2. Upload `index.html` to the repo root.
-3. In the repo settings → **Pages** → set source to `main` branch, root.
-4. Wait ~1 minute. Your map is now at `https://YOUR-USERNAME.github.io/wyde-map/`.
-5. Configure the API connection (one-time, see below).
-6. Embed in WordPress (see below).
+- **English:** <https://neverything.github.io/kaf-wyde-map/>
+- **French:**  <https://neverything.github.io/kaf-wyde-map/index_fr.html>
+- **Repo:**    <https://github.com/neverything/kaf-wyde-map>
 
-## Configuration (one-time, takes ~5 minutes)
+## Embedding
 
-Open `index.html` and find the `CONFIG` block near the top of the `<script>`.
-You'll need to fill in the `micrositeTermId` for both languages. Here's how:
+Drop this into a Custom HTML block on the WordPress page. The iframe
+auto-resizes to its content via `postMessage` — the small `<script>` after
+the iframe is what does the resize handshake.
 
-### Step 1 — confirm taxonomy slugs
-
-Visit this URL in your browser:
-
-```
-https://www.kofiannanfoundation.org/wp-json/wp/v2/taxonomies
-```
-
-You'll see a JSON list of all taxonomies. Look for two entries:
-
-- The **microsite** taxonomy. The key (e.g. `microsite`) goes into
-  `CONFIG.micrositeTaxonomy`.
-- The **country** taxonomy. The key (likely `country`) goes into
-  `CONFIG.countryTaxonomy`.
-
-The defaults in `CONFIG` are guesses based on the public URLs — they're
-probably right, but verify.
-
-### Step 2 — find the WYDE microsite term IDs
-
-Visit:
-
-```
-https://www.kofiannanfoundation.org/wp-json/wp/v2/microsite?slug=wyde
-```
-
-(replacing `microsite` with whatever you found in step 1, if different).
-
-You'll get back something like:
-
-```json
-[{ "id": 123, "name": "WYDE", "slug": "wyde", ... }]
-```
-
-Take the `id` value (e.g. `123`) and put it in `CONFIG.micrositeTermId.en`.
-
-If there's a separate French term (e.g. slug `wyde-fr`), repeat with that
-slug and put the resulting ID in `CONFIG.micrositeTermId.fr`. If French
-posts share the same WYDE term as English, just use the same ID for both.
-
-> **If FR/EN can't be filtered separately by microsite term**, you'll need
-> a different filter — most likely Polylang or WPML language filtering. Look
-> for a `lang` query parameter on the API. Open an issue and we can wire that
-> up.
-
-### Step 3 — test
-
-Open `https://YOUR-USERNAME.github.io/wyde-map/?lang=en` and check the
-browser console (F12). You should see no errors and a map with countries.
-
-If you see `Unknown countries: [...]` warnings, add those entries to the
-`COUNTRIES` gazetteer at the top of the script — one line per country, with
-ISO code and lon/lat centroid.
-
-## Embedding in WordPress
-
-Add this to the `/wyde/` page (English version) using a Custom HTML block:
+### English (`/wyde/`)
 
 ```html
-<iframe
-  src="https://YOUR-USERNAME.github.io/wyde-map/?lang=en"
-  style="width:100%; border:0; min-height:700px;"
-  title="WYDE Stories of Impact map"
-  loading="lazy"
-  id="wyde-map-iframe"></iframe>
+<iframe id="wyde-map"
+        src="https://neverything.github.io/kaf-wyde-map/"
+        title="WYDE Accountability Hubs map"
+        style="width:100%;border:0;display:block;min-height:600px"
+        loading="lazy"
+        scrolling="no"></iframe>
 <script>
-window.addEventListener('message', function(e) {
-  if (e.data && e.data.type === 'wyde-map:resize') {
-    var f = document.getElementById('wyde-map-iframe');
-    if (f) f.style.height = (e.data.height + 8) + 'px';
-  }
-});
+(function () {
+  var f = document.getElementById('wyde-map');
+  window.addEventListener('message', function (ev) {
+    if (ev.origin !== 'https://neverything.github.io') return;
+    if (!ev.data || ev.data.type !== 'wyde-map:resize') return;
+    f.style.height = ev.data.height + 'px';
+  });
+})();
 </script>
 ```
 
-For the French version (`/wyde-fr/`) use the same snippet but with `?lang=fr`
-in the iframe `src`.
+### French (`/wyde-fr/` or equivalent)
 
-The small `<script>` after the iframe is what makes the iframe auto-resize
-to fit its content. Without it, the iframe will be a fixed 700px tall and
-might cut off content or have empty space at the bottom.
+Same snippet, but change the iframe `src` to:
 
-## Adding new countries
+```
+https://neverything.github.io/kaf-wyde-map/index_fr.html
+```
 
-When the WYDE site publishes a story for a new country, two things may need
-to happen:
+You can also keep the `id="wyde-map"` — the listener works for both.
 
-1. **Most countries are already listed** in the `COUNTRIES` gazetteer in
-   `index.html`. If the country name in the WP `country` taxonomy matches
-   exactly (e.g. `Cameroon`), it just works.
+### Notes
 
-2. **For genuinely new countries**, add a single line to the `COUNTRIES`
-   object:
+- The `ev.origin` check protects the parent page from any other site
+  posting messages with a matching shape.
+- `scrolling="no"` keeps a stray scrollbar from flashing while the iframe
+  measures itself.
+- "Read story" links break out of the iframe via `target="_top"`. If you
+  ever add a `sandbox` attribute to the iframe, include
+  `allow-top-navigation-by-user-activation` so navigation still works.
+- Pushing to `main` redeploys via GitHub Pages within ~30 seconds.
 
-   ```js
-   'CountryName': { iso: '000', lon: 0.0, lat: 0.0, fr: 'NomFrançais' },
-   ```
+## How posts are filtered
 
-   - `iso`: 3-digit numeric ISO 3166-1 code (lookup at
-     <https://en.wikipedia.org/wiki/ISO_3166-1_numeric>) — must match the
-     `id` field used in the world-atlas TopoJSON.
-   - `lon`/`lat`: country centroid in decimal degrees.
-   - `fr`: French name as it should appear to users.
+Posts are filtered by their assigned WordPress page template:
 
-   Commit, push to GitHub, and the change is live within a minute.
+| Language | Template slug                |
+| -------- | ---------------------------- |
+| English  | `single-microsite-wyde`      |
+| French   | `single-microsite-wyde-fr`   |
 
-## Adding new languages
+The map fetches posts in the WYDE microsite term (configured in `map.js`
+as `micrositeTermId: 1436`) and then filters client-side by
+`post.template`. Cached in `localStorage` for 10 minutes per language.
 
-The map is structured around two languages out of the box. To add a third
-(e.g. Portuguese for Mozambique etc.):
+## Adding a new country
 
-1. Add a `pt` key to `CONFIG.labels` with translated strings.
-2. Add a `pt` key to `CONFIG.micrositeTermId` if there's a separate term.
-3. Optionally add `pt: 'PortugueseName'` to each entry in `COUNTRIES`.
-4. Use `?lang=pt` in the iframe URL.
+Stories appear on the map automatically as long as the country is in the
+gazetteer. To add a new country, add one line to `COUNTRIES` in `map.js`:
 
-## How the map looks up countries
+```js
+'CountryName': { iso: '000', lon: 0.0, lat: 0.0, fr: 'NomFrançais' },
+```
 
-For each post returned by the API, the code walks the embedded
-`wp:term` arrays and finds the term whose taxonomy matches
-`CONFIG.countryTaxonomy`. It then looks up that term name in the
-`COUNTRIES` gazetteer.
+- `iso` — 3-digit ISO 3166-1 numeric code (matches the world-atlas TopoJSON
+  feature `id`). Lookup: <https://en.wikipedia.org/wiki/ISO_3166-1_numeric>.
+- `lon` / `lat` — country centroid in decimal degrees, used to place the
+  marker.
+- `fr` — French country name as it appears in the FR `country` taxonomy.
 
-If the WP country term is in French (e.g. `Tchad`), the code falls back to
-a French-to-English lookup so the same gazetteer works for both languages —
-you only need to define each country once.
+Commit, push, the change is live in ~30 seconds.
+
+If the browser console logs `Unknown countries: [...]`, that's the cue
+that a country term in the API doesn't have a gazetteer entry.
+
+## Adding a new language
+
+To add a third locale (e.g. Portuguese):
+
+1. Duplicate `index.html` → `index_pt.html`. Update `<html lang>`, the
+   visible labels, and `window.PAGE_DEFAULTS` to
+   `{ lang: 'pt', template: 'single-microsite-wyde-pt' }` (or whatever
+   template slug WP uses).
+2. In `map.js`, add a `pt` block to `CONFIG.labels` with the translated
+   UI strings.
+3. Optionally add `pt: 'PortugueseName'` to each entry in `COUNTRIES` and
+   extend the lookup if the FR-only fallback isn't enough.
+
+## Local development
+
+It's a pure static site — no build step.
+
+```bash
+python3 -m http.server 8765
+# open http://localhost:8765/index.html
+```
 
 ## Files
 
-- `index.html` — the entire map (single file, no build step).
-- `README.md` — this file.
+| File              | Purpose                                            |
+| ----------------- | -------------------------------------------------- |
+| `index.html`      | English shell — markup + `PAGE_DEFAULTS`           |
+| `index_fr.html`   | French shell — markup + `PAGE_DEFAULTS`            |
+| `map.js`          | Shared map logic, fetch, render, country gazetteer |
+| `styles.css`      | Shared styles                                      |
 
-That's it. No npm, no build, no framework. Just edit and push.
-
-## Dependencies (loaded at runtime from CDN)
+## Runtime dependencies (loaded from CDN)
 
 - [D3 v7](https://d3js.org/)
 - [topojson-client v3](https://github.com/topojson/topojson-client)
-- [world-atlas v2](https://github.com/topojson/world-atlas) (countries-50m)
+- [world-atlas v2](https://github.com/topojson/world-atlas) — `countries-50m.json`
 
-All three load from `cdn.jsdelivr.net`. Total payload: ~350 KB gzipped.
+All three from `cdn.jsdelivr.net`, ~350 KB gzipped total.
 
 ## Troubleshooting
 
-**Map shows "Could not load stories"** — Open the browser console. The most
-likely cause is a CORS error or wrong taxonomy slug. The WP REST API allows
-CORS by default, but some security plugins block it. If blocked, you'll need
-to either whitelist the GitHub Pages origin server-side, or fall back to a
-static JSON file in the repo.
+**"Could not load stories."** Browser console will show the cause. Most
+likely a CORS error from a security plugin on the WP side, or the
+`microsite` term ID has changed.
 
-**Stories load but no countries highlight** — The `country` taxonomy slug in
-`CONFIG.countryTaxonomy` doesn't match what the API uses. Check
-`/wp-json/wp/v2/taxonomies` again.
+**Map renders but no countries highlight.** Check the console for
+`Unknown countries: [...]`. Add them to `COUNTRIES`.
 
-**Some countries are missing from the map** — Check the browser console for
-`Unknown countries:` warnings. Add them to the `COUNTRIES` gazetteer.
+**Wrong number of stories.** Each post must have its template set to
+exactly `single-microsite-wyde` (EN) or `single-microsite-wyde-fr` (FR).
+Cross-tagged posts (FR title with EN template, etc.) will show up in the
+wrong language.
 
-**Hover card image doesn't load** — The post has no featured image set in
-WordPress, or the image URL is broken. The card hides the image element
-gracefully (`onerror="this.style.display='none'"`).
+**Hover card image doesn't load.** The post has no featured image, or its
+URL is broken. The card hides the `<img>` gracefully via
+`onerror="this.style.display='none'"`.
 
-**FR map shows English country names** — The FR posts are tagged with
-English country terms. Either (a) the WP site uses one set of country terms
-across both languages (current behaviour: the map translates them via the
-gazetteer), or (b) FR posts use FR country terms (also handled). No action
-needed in either case.
+**Click on "Read story" does nothing or opens inside the iframe.** The
+parent embed has a `sandbox` attribute without `allow-top-navigation` (or
+its user-activation variant). Add it, or remove the sandbox.

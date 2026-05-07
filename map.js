@@ -97,11 +97,6 @@ function setText(id, value) {
   const el = document.getElementById(id);
   if (el) el.textContent = value;
 }
-setText('label-countries', T.countries);
-setText('label-stories', T.stories);
-setText('label-hint', T.hint);
-setText('label-index', T.indexTitle);
-setText('label-index-hint', T.indexHint);
 setText('status', T.loading);
 
 // ============================================================
@@ -275,9 +270,8 @@ async function init() {
     return;
   }
 
-  document.getElementById('stat-countries').textContent = data.length;
-  document.getElementById('stat-stories').textContent =
-    data.reduce((acc, d) => acc + d.articles.length, 0);
+  setText('stat-countries', data.length);
+  setText('stat-stories', data.reduce((acc, d) => acc + d.articles.length, 0));
 
   await Promise.all([loadScript(D3_URL), loadScript(TOPOJSON_URL)]);
   const world = await fetch(TOPO_URL).then(r => r.json());
@@ -298,16 +292,15 @@ const chips = document.getElementById('chips');
 
 function renderChips(data) {
   chips.innerHTML = '';
-  data.forEach((d, i) => {
+  data.forEach(d => {
     const li = document.createElement('li');
     const b = document.createElement('button');
-    b.className = 'country-row';
+    b.className = 'country-pill';
     b.setAttribute('data-iso', d.iso);
     b.setAttribute('aria-label', `${d.displayName}, ${T.story_count(d.articles.length)}`);
     b.innerHTML = `
-      <span class="num">${String(i + 1).padStart(2, '0')}</span>
       <span class="name">${escapeHtml(d.displayName)}</span>
-      <span class="count">${T.story_count(d.articles.length)}</span>
+      <span class="count">${d.articles.length}</span>
     `;
     b.addEventListener('click', (ev) => {
       ev.stopPropagation();

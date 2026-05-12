@@ -57,7 +57,6 @@ a { color: inherit; }
   width: 100%;
   max-width: 1140px;
   margin: 0 auto;
-  padding: clamp(20px, 4vw, 40px) clamp(16px, 4vw, 36px) clamp(40px, 6vw, 64px);
 }
 
 /* ============================================================
@@ -66,7 +65,7 @@ a { color: inherit; }
 .svg-host {
   position: relative;
   background: var(--cream);
-  padding: clamp(14px, 2.5vw, 24px);
+  border: 1px solid var(--cream);
   isolation: isolate;
 }
 .svg-host svg { display: block; width: 100%; height: auto; }
@@ -249,6 +248,7 @@ a { color: inherit; }
    ============================================================ */
 .index {
   margin-top: clamp(20px, 3vw, 32px);
+  padding: 0 clamp(16px, 4vw, 36px) clamp(40px, 6vw, 64px);
 }
 .country-list {
   list-style: none;
@@ -266,8 +266,8 @@ a { color: inherit; }
   box-sizing: border-box;
   cursor: pointer;
   font-family: inherit;
-  font-size: 14px;
-  font-weight: 500;
+  font-size: 16px;
+  font-weight: 400;
   line-height: 1.2;
   color: var(--brand);
   background: #fff;
@@ -290,7 +290,7 @@ a { color: inherit; }
 }
 .country-pill .name { white-space: nowrap; }
 .country-pill .count {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
   font-feature-settings: "tnum" 1;
   padding: 2px 7px;
